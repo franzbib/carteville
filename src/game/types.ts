@@ -1,6 +1,7 @@
 export type GameMode = 'easy' | 'normal' | 'review';
 
 export type Phase = 'identify' | 'complete';
+export type LevelId = 1 | 2;
 
 export type BuildingName =
   | 'hopital'
@@ -20,7 +21,7 @@ export interface BuildingProgress {
 }
 
 export interface SaveData {
-  version: 1;
+  version: 2;
   started: boolean;
   tutorialSeen: boolean;
   mode: GameMode;
@@ -28,6 +29,8 @@ export interface SaveData {
   cluesDiscovered: string[];
   buildingProgress: Record<number, BuildingProgress>;
   phase: Phase;
+  currentLevel: LevelId;
+  level2Seed: string;
 }
 
 export interface RectLike {

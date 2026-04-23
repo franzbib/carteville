@@ -7,6 +7,7 @@ export interface HUDStats {
   planStatus: string;
   modeLabel: string;
   soundEnabled: boolean;
+  showLevelAdvance: boolean;
 }
 
 type ToastTone = 'info' | 'success' | 'error';
@@ -18,6 +19,7 @@ interface HUDCallbacks {
   onOpenLabel: () => void;
   onToggleNotebook: () => void;
   onCloseActive: () => void;
+  onAdvanceLevel: () => void;
 }
 
 export class HUD {
@@ -28,6 +30,7 @@ export class HUD {
   private readonly statusChip: HTMLSpanElement;
   private readonly modeChip: HTMLSpanElement;
   private readonly prompt: HTMLDivElement;
+  private readonly advancePanel: HTMLDivElement;
   private readonly dialogue: HTMLDivElement;
   private readonly dialogueName: HTMLDivElement;
   private readonly dialogueText: HTMLParagraphElement;
@@ -61,6 +64,16 @@ export class HUD {
         </div>
       </section>
       <div class="prompt-pill hidden"></div>
+      <section class="level-advance hidden">
+        <p class="panel-kicker">Niveau suivant</p>
+        <div class="level-advance-body">
+          <div class="level-advance-copy">
+            <h3>Passer au niveau 2</h3>
+            <p>Nouvelle carte, nouveau terrain d exercice. La suite est prete a accueillir votre prochain contenu.</p>
+          </div>
+          <button type="button" class="advance-button" data-action="advance-level" aria-label="Passer au niveau 2">→</button>
+        </div>
+      </section>
       <section class="hud-dialogue hidden">
         <div class="dialogue-header">
           <div class="dialogue-name"></div>
@@ -132,6 +145,7 @@ export class HUD {
     this.statusChip = this.root.querySelector('[data-chip="status"]') as HTMLSpanElement;
     this.modeChip = this.root.querySelector('[data-chip="mode"]') as HTMLSpanElement;
     this.prompt = this.root.querySelector('.prompt-pill') as HTMLDivElement;
+    this.advancePanel = this.root.querySelector('.level-advance') as HTMLDivElement;
     this.dialogue = this.root.querySelector('.hud-dialogue') as HTMLDivElement;
     this.dialogueName = this.root.querySelector('.dialogue-name') as HTMLDivElement;
     this.dialogueText = this.root.querySelector('.dialogue-text') as HTMLParagraphElement;
@@ -150,6 +164,10 @@ export class HUD {
     (this.root.querySelector('[data-action="close-dialogue"]') as HTMLButtonElement).addEventListener(
       'click',
       callbacks.onCloseActive
+    );
+    (this.root.querySelector('[data-action="advance-level"]') as HTMLButtonElement).addEventListener(
+      'click',
+      callbacks.onAdvanceLevel
     );
 
     this.root.querySelectorAll<HTMLButtonElement>('[data-mobile]').forEach((button) => {
@@ -192,6 +210,7 @@ export class HUD {
     this.statusChip.textContent = stats.planStatus;
     this.modeChip.textContent = stats.modeLabel;
     this.soundButton.textContent = stats.soundEnabled ? 'Son actif' : 'Son coupe';
+    this.advancePanel.classList.toggle('hidden', !stats.showLevelAdvance);
   }
 
   setPrompt(text: string | null): void {

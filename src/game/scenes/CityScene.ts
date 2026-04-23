@@ -158,7 +158,7 @@ export class CityScene extends Phaser.Scene {
     }
 
     this.add
-      .text(PLACE_RECT.x + PLACE_RECT.width / 2, PLACE_RECT.y + 24, 'place des Grands-Hommes', {
+      .text(PLACE_RECT.x + PLACE_RECT.width / 2, PLACE_RECT.y + 24, 'place Doualle', {
         fontFamily: 'Georgia',
         fontSize: '28px',
         color: '#7e4c35',
@@ -331,6 +331,10 @@ export class CityScene extends Phaser.Scene {
       },
       onCloseActive: () => {
         this.closeActiveElement();
+      },
+      onAdvanceLevel: () => {
+        audioManager.unlock();
+        this.advanceToLevel2();
       }
     });
 
@@ -401,6 +405,10 @@ export class CityScene extends Phaser.Scene {
       parts.push(`<kbd>E</kbd> observer le batiment ${nearestBuilding.id}`);
     }
 
+    if (this.saveData.phase === 'complete' && this.saveData.currentLevel === 1) {
+      parts.push(`<kbd>Entree</kbd> passer au niveau 2`);
+    }
+
     this.hud.setPrompt(parts.length > 0 ? parts.join(' | ') : null);
   }
 
@@ -434,6 +442,9 @@ export class CityScene extends Phaser.Scene {
     switch (event.code) {
       case 'KeyC':
         this.toggleNotebook();
+        return;
+      case 'Enter':
+        this.advanceToLevel2();
         return;
       case 'KeyL':
         this.tryOpenLabelModal();
@@ -656,10 +667,10 @@ export class CityScene extends Phaser.Scene {
     this.refreshVisualState();
     this.updateHud();
     this.saveSnapshot();
-    this.hud.showToast('Plan reconstitue. Vous pouvez encore explorer librement la ville.', 'success');
+    this.hud.showToast('Plan reconstitue. La fleche a droite ouvre le niveau 2.', 'success');
     this.showDialogue(
       'Ville',
-      'Tous les batiments sont identifies. Le quartier reste accessible pour reviser les reperes.'
+      'Tous les batiments sont identifies. Utilisez la grande fleche a droite pour passer au niveau 2, ou continuez a reviser les reperes.'
     );
   }
 
@@ -683,8 +694,19 @@ export class CityScene extends Phaser.Scene {
       buildingsTotal: TOTAL_BUILDINGS,
       planStatus: this.saveData.phase === 'complete' ? 'reconstitue' : 'a completer',
       modeLabel: this.modeLabel(this.saveData.mode),
-      soundEnabled: this.saveData.soundEnabled
+      soundEnabled: this.saveData.soundEnabled,
+      showLevelAdvance: this.saveData.phase === 'complete' && this.saveData.currentLevel === 1
     });
+  }
+
+  private advanceToLevel2(): void {
+    if (this.saveData.phase !== 'complete' || this.saveData.currentLevel === 2) {
+      return;
+    }
+
+    this.saveData.currentLevel = 2;
+    this.saveSnapshot();
+    this.scene.start('Level2Scene');
   }
 
   private getValidatedCount(): number {

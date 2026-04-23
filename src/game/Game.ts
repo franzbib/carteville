@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import { MAP_HEIGHT, MAP_WIDTH } from './data/mapLayout';
 import { BootScene } from './scenes/BootScene';
 import { CityScene } from './scenes/CityScene';
+import { Level2Scene } from './scenes/Level2Scene';
 import { MenuScene } from './scenes/MenuScene';
 
 export class FrenchCityGame {
@@ -30,7 +31,7 @@ export class FrenchCityGame {
         antialias: true,
         pixelArt: false
       },
-      scene: [BootScene, MenuScene, CityScene]
+      scene: [BootScene, MenuScene, CityScene, Level2Scene]
     });
   }
 }

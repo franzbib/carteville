@@ -1,6 +1,6 @@
 import { BUILDING_OPTIONS } from '../data/buildings';
 import { CLUES } from '../data/clues';
-import type { BuildingName, BuildingProgress, GameMode, Phase, SaveData } from '../types';
+import type { BuildingName, BuildingProgress, GameMode, LevelId, Phase, SaveData } from '../types';
 
 const STORAGE_KEY = 'fle-city-game-save-v1';
 
@@ -12,6 +12,10 @@ const LEGACY_CLUE_ID_MAP: Record<string, string> = {
   'theatre-corner': 'ispa-corner',
   'hospital-rue-rousseau': 'hospital-francs-muriers'
 };
+
+function createLevel2Seed(): string {
+  return `${Date.now().toString(36)}-${Math.floor(Math.random() * 1_000_000).toString(36)}`;
+}
 
 function createBuildingProgress(validated = false): Record<number, BuildingProgress> {
   return Object.fromEntries(
@@ -76,18 +80,28 @@ function derivePhase(
   return allValidated ? 'complete' : 'identify';
 }
 
+function deriveCurrentLevel(rawLevel: unknown): LevelId {
+  return rawLevel === 2 ? 2 : 1;
+}
+
+function normalizeLevel2Seed(input: unknown): string {
+  return typeof input === 'string' && input.trim().length > 0 ? input : createLevel2Seed();
+}
+
 export function createDefaultSave(mode: GameMode = 'normal'): SaveData {
   const reviewMode = mode === 'review';
 
   return {
-    version: 1,
+    version: 2,
     started: false,
     tutorialSeen: reviewMode,
     mode,
     soundEnabled: true,
     cluesDiscovered: reviewMode ? CLUES.map((clue) => clue.id) : [],
     buildingProgress: createBuildingProgress(reviewMode),
-    phase: reviewMode ? 'complete' : 'identify'
+    phase: reviewMode ? 'complete' : 'identify',
+    currentLevel: 1,
+    level2Seed: createLevel2Seed()
   };
 }
 
@@ -142,14 +156,16 @@ export function sanitizeSaveData(input: unknown): SaveData {
   const buildingProgress = sanitizeBuildingProgress(raw.buildingProgress, mode);
 
   return {
-    version: 1,
+    version: 2,
     started: typeof raw.started === 'boolean' ? raw.started : fallback.started,
     tutorialSeen: typeof raw.tutorialSeen === 'boolean' ? raw.tutorialSeen : mode === 'review',
     mode,
     soundEnabled: typeof raw.soundEnabled === 'boolean' ? raw.soundEnabled : fallback.soundEnabled,
     cluesDiscovered: normalizeClueIds(raw.cluesDiscovered, mode),
     buildingProgress,
-    phase: derivePhase(raw.phase, mode, buildingProgress)
+    phase: derivePhase(raw.phase, mode, buildingProgress),
+    currentLevel: deriveCurrentLevel((raw as Partial<SaveData>).currentLevel),
+    level2Seed: normalizeLevel2Seed((raw as Partial<SaveData>).level2Seed)
   };
 }
 
@@ -193,6 +209,10 @@ export function resetSave(): void {
 }
 
 export function hasMeaningfulProgress(data: SaveData): boolean {
+  if (data.currentLevel === 2) {
+    return true;
+  }
+
   if (data.phase === 'complete') {
     return true;
   }
@@ -205,4 +225,11 @@ export function hasMeaningfulProgress(data: SaveData): boolean {
     const progress = data.buildingProgress[building.id];
     return Boolean(progress?.validated || progress?.proposed);
   });
+}
+
+export function regenerateLevel2Seed(data: SaveData): SaveData {
+  return {
+    ...data,
+    level2Seed: createLevel2Seed()
+  };
 }

@@ -188,8 +188,12 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private describeSave(save: SaveData): string {
+    if (save.currentLevel === 2) {
+      return 'niveau 2 ouvert, nouvelle carte disponible.';
+    }
+
     if (save.phase === 'complete') {
-      return 'plan deja reconstitue, ville librement explorable.';
+      return 'niveau 1 termine, passage vers le niveau 2 disponible.';
     }
 
     return `phase d'identification, ${save.cluesDiscovered.length} indice(s) trouve(s).`;
@@ -238,6 +242,11 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private launchFromSave(_save: SaveData): void {
+    if (_save.currentLevel === 2) {
+      this.scene.start('Level2Scene');
+      return;
+    }
+
     this.scene.start('CityScene');
   }
 }

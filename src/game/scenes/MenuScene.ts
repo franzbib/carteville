@@ -1,13 +1,7 @@
 import Phaser from 'phaser';
 
 import { audioManager } from '../utils/audio';
-import {
-  createDefaultSave,
-  hasMeaningfulProgress,
-  loadSaveData,
-  resetSave,
-  saveGame
-} from '../utils/save';
+import { createDefaultSave, hasMeaningfulProgress, loadSaveData, resetSave, saveGame } from '../utils/save';
 import type { GameMode, SaveData } from '../types';
 
 const MODES: Array<{
@@ -18,17 +12,17 @@ const MODES: Array<{
   {
     key: 'easy',
     title: 'Mode facile',
-    description: 'Feedback immédiat vrai ou faux après chaque étiquette.'
+    description: 'Feedback immediat vrai ou faux apres chaque etiquette.'
   },
   {
     key: 'normal',
     title: 'Mode normal',
-    description: 'Validation globale quand tous les bâtiments ont reçu un nom.'
+    description: 'Validation globale quand tous les batiments ont recu un nom.'
   },
   {
     key: 'review',
-    title: 'Mode révision',
-    description: 'Les bâtiments sont visibles dès le départ pour corriger ou réviser.'
+    title: 'Mode revision',
+    description: 'Les batiments sont visibles des le depart pour reviser le plan.'
   }
 ];
 
@@ -79,7 +73,7 @@ export class MenuScene extends Phaser.Scene {
     this.add.image(170, 160, 'city-emblem').setDisplaySize(110, 110).setAlpha(0.96);
 
     this.add
-      .text(246, 132, 'Repérage en ville', {
+      .text(246, 132, 'Reperage en ville', {
         fontFamily: 'Georgia',
         fontSize: '54px',
         color: '#24303a',
@@ -88,17 +82,12 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0, 0.5);
 
     this.add
-      .text(
-        246,
-        192,
-        "Explorez le quartier, croisez les indices et identifiez les bâtiments avant d'accomplir les missions.",
-        {
-          fontFamily: 'Trebuchet MS',
-          fontSize: '24px',
-          color: '#55616d',
-          wordWrap: { width: 760 }
-        }
-      )
+      .text(246, 192, "Explorez le quartier, croisez les indices et identifiez les batiments du plan.", {
+        fontFamily: 'Trebuchet MS',
+        fontSize: '24px',
+        color: '#55616d',
+        wordWrap: { width: 760 }
+      })
       .setOrigin(0, 0.5);
   }
 
@@ -151,7 +140,7 @@ export class MenuScene extends Phaser.Scene {
     this.footerHint = this.add.text(
       146,
       742,
-      'Flèches gauche/droite : changer de mode · Entrée : jouer · N : nouvelle partie · R : effacer la sauvegarde',
+      'Fleches gauche/droite : changer de mode · Entree : jouer · N : nouvelle partie · R : effacer la sauvegarde',
       {
         fontFamily: 'Trebuchet MS',
         fontSize: '20px',
@@ -161,12 +150,17 @@ export class MenuScene extends Phaser.Scene {
     );
 
     this.add
-      .text(146, 692, 'Version clavier intégrale, sauvegarde locale automatique, audio discret activable à la première interaction.', {
-        fontFamily: 'Trebuchet MS',
-        fontSize: '18px',
-        color: '#55616d',
-        wordWrap: { width: 1020 }
-      })
+      .text(
+        146,
+        692,
+        'Version clavier integrale, sauvegarde locale automatique et carnet d indices consultable en jeu.',
+        {
+          fontFamily: 'Trebuchet MS',
+          fontSize: '18px',
+          color: '#55616d',
+          wordWrap: { width: 1020 }
+        }
+      )
       .setAlpha(0.95);
   }
 
@@ -184,28 +178,21 @@ export class MenuScene extends Phaser.Scene {
 
     this.actionHint.setText(
       hasSave
-        ? `Entrée : reprendre la partie en cours · N : démarrer une nouvelle partie en ${selection.title.toLowerCase()}`
-        : `Entrée : commencer une partie en ${selection.title.toLowerCase()}`
+        ? `Entree : reprendre la partie en cours · N : demarrer une nouvelle partie en ${selection.title.toLowerCase()}`
+        : `Entree : commencer une partie en ${selection.title.toLowerCase()}`
     );
 
     this.saveHint.setText(
-      hasSave
-        ? `Sauvegarde détectée : ${this.describeSave(this.currentSave)}`
-        : "Aucune sauvegarde active. Vous pouvez commencer immédiatement."
+      hasSave ? `Sauvegarde detectee : ${this.describeSave(this.currentSave)}` : 'Aucune sauvegarde active.'
     );
   }
 
   private describeSave(save: SaveData): string {
-    if (save.phase === 'identify') {
-      return `phase d'identification, ${save.cluesDiscovered.length} indice(s) trouvé(s).`;
+    if (save.phase === 'complete') {
+      return 'plan deja reconstitue, ville librement explorable.';
     }
-    if (save.phase === 'phase2-intro') {
-      return 'carte terminée, introduction aux missions prête.';
-    }
-    if (save.phase === 'missions') {
-      return `missions en cours, série ${save.currentMissionSeries + 1}.`;
-    }
-    return 'victoire finale déjà atteinte.';
+
+    return `phase d'identification, ${save.cluesDiscovered.length} indice(s) trouve(s).`;
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
@@ -247,26 +234,10 @@ export class MenuScene extends Phaser.Scene {
     save.started = true;
     saveGame(save);
     audioManager.syncFromPreference(save.soundEnabled);
-
-    if (save.phase === 'phase2-intro') {
-      this.scene.start('PhaseTransitionScene');
-      return;
-    }
-
     this.scene.start('CityScene');
   }
 
-  private launchFromSave(save: SaveData): void {
-    if (save.phase === 'phase2-intro') {
-      this.scene.start('PhaseTransitionScene');
-      return;
-    }
-
-    if (save.phase === 'victory') {
-      this.scene.start('VictoryScene');
-      return;
-    }
-
+  private launchFromSave(_save: SaveData): void {
     this.scene.start('CityScene');
   }
 }

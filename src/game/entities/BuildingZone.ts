@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-import { BUILDINGS_BY_ID } from '../data/buildings';
+import { BUILDINGS_BY_ID, BUILDINGS_BY_KEY } from '../data/buildings';
 import { BUILDING_LAYOUTS } from '../data/mapLayout';
 import type { BuildingProgress } from '../types';
 
@@ -17,9 +17,10 @@ export class BuildingZone {
   private readonly door: Phaser.GameObjects.Rectangle;
   private readonly numberBadge: Phaser.GameObjects.Ellipse;
   private readonly numberText: Phaser.GameObjects.Text;
+  private readonly labelBadge: Phaser.GameObjects.Rectangle;
   private readonly nameText: Phaser.GameObjects.Text;
+  private readonly statusText: Phaser.GameObjects.Text;
   private readonly halo: Phaser.GameObjects.Ellipse;
-  private readonly missionHalo: Phaser.GameObjects.Ellipse;
 
   constructor(scene: Phaser.Scene, id: number) {
     this.scene = scene;
@@ -31,6 +32,7 @@ export class BuildingZone {
     const depth = layout.y + layout.height;
     const centerX = layout.x + layout.width / 2;
     const centerY = layout.y + layout.height / 2;
+    const labelWidth = Math.max(56, layout.width - 22);
 
     this.shadow = scene.add
       .rectangle(centerX + 6, centerY + 10, layout.width, layout.height, 0x1c2227, 0.14)
@@ -38,7 +40,7 @@ export class BuildingZone {
       .setOrigin(0.5);
 
     this.base = scene.add
-      .rectangle(centerX, centerY, layout.width, layout.height, 0xe7dcc4)
+      .rectangle(centerX, centerY, layout.width, layout.height, 0xe9dfca)
       .setStrokeStyle(3, 0x7d6b57, 0.9)
       .setDepth(depth);
 
@@ -64,18 +66,35 @@ export class BuildingZone {
       .setOrigin(0.5)
       .setDepth(depth + 5);
 
+    this.labelBadge = scene.add
+      .rectangle(centerX, centerY + 10, labelWidth, Math.min(54, layout.height - 30), 0xf8f3e7, 0.94)
+      .setStrokeStyle(2, 0xd7c9b1, 0.95)
+      .setDepth(depth + 4)
+      .setVisible(false);
+
     this.nameText = scene.add
-      .text(centerX, layout.y + layout.height + (layout.namePlateOffsetY ?? 12), '', {
+      .text(centerX, centerY + 4, '', {
         fontFamily: 'Trebuchet MS',
-        fontSize: '16px',
+        fontSize: layout.width < 120 ? '12px' : '14px',
         color: '#24303a',
-        backgroundColor: '#f6f0e3cc',
-        padding: { left: 10, right: 10, top: 4, bottom: 4 }
+        fontStyle: 'bold',
+        align: 'center',
+        wordWrap: { width: Math.max(44, layout.width - 28) }
       })
-      .setOrigin(0.5, 0)
-      .setDepth(depth + 6)
-      .setVisible(false)
-      .setWordWrapWidth(layout.width + 70);
+      .setOrigin(0.5, 0.5)
+      .setDepth(depth + 5)
+      .setVisible(false);
+
+    this.statusText = scene.add
+      .text(centerX, centerY + Math.min(28, layout.height * 0.22), '', {
+        fontFamily: 'Trebuchet MS',
+        fontSize: layout.width < 120 ? '10px' : '11px',
+        color: '#6a726f',
+        align: 'center'
+      })
+      .setOrigin(0.5, 0.5)
+      .setDepth(depth + 5)
+      .setVisible(false);
 
     this.halo = scene.add
       .ellipse(centerX, centerY, layout.width + 38, layout.height + 38, 0xe7b75f, 0.18)
@@ -83,14 +102,8 @@ export class BuildingZone {
       .setDepth(depth - 6)
       .setVisible(false);
 
-    this.missionHalo = scene.add
-      .ellipse(centerX, centerY, layout.width + 52, layout.height + 52, 0x83b18a, 0.14)
-      .setStrokeStyle(3, 0x5b8761, 0.85)
-      .setDepth(depth - 7)
-      .setVisible(false);
-
     scene.tweens.add({
-      targets: [this.halo, this.missionHalo],
+      targets: this.halo,
       alpha: { from: 0.14, to: 0.38 },
       duration: 900,
       yoyo: true,
@@ -98,7 +111,7 @@ export class BuildingZone {
       ease: 'Sine.easeInOut'
     });
 
-    this.solid = scene.add.zone(centerX, centerY, layout.width, layout.height);
+    this.solid = scene.add.zone(centerX, centerY, Math.max(42, layout.width - 8), Math.max(38, layout.height - 10));
     scene.physics.add.existing(this.solid, true);
     this.solid.setData('buildingId', id);
   }
@@ -117,44 +130,61 @@ export class BuildingZone {
     this.halo.setVisible(active);
   }
 
-  setMissionTarget(active: boolean): void {
-    this.missionHalo.setVisible(active);
-  }
-
   applyProgress(progress: BuildingProgress, revealName = false): void {
     const isValidated = progress.validated || revealName;
-    const baseColor = isValidated ? this.definition.color : 0xe7dcc4;
-    const borderColor = progress.flaggedWrong ? 0xa5574f : 0x7d6b57;
-    const alpha = isValidated ? 0.88 : 1;
+    const hasProposal = Boolean(progress.proposed);
+    const baseColor = isValidated ? this.definition.color : 0xe9dfca;
+    const borderColor = progress.flaggedWrong ? 0xa5574f : isValidated ? 0x50606a : 0x7d6b57;
 
-    this.base.setFillStyle(baseColor, alpha);
+    this.base.setFillStyle(baseColor, isValidated ? 0.92 : 1);
     this.base.setStrokeStyle(progress.flaggedWrong ? 4 : 3, borderColor, 0.92);
-
     this.trim.setFillStyle(isValidated ? 0xf8f2e5 : 0xf2ebdc);
     this.numberBadge.setFillStyle(isValidated ? 0x24303a : 0x48545f, 0.94);
 
     if (isValidated) {
-      this.nameText.setText(this.definition.shortName);
-      this.nameText.setVisible(true);
-    } else {
-      this.nameText.setVisible(false);
+      this.showLabel(this.definition.shortName, 'Valide', '#24303a', '#4f8058', 0xf8f3e7, 0xf2ead6);
+      return;
     }
 
-    if (progress.proposed && !isValidated) {
-      const proposalLabel = progress.proposed === this.definition.key ? 'À vérifier' : 'Proposé';
-      this.nameText.setText(proposalLabel);
-      this.nameText.setVisible(true);
-      this.nameText.setColor(progress.flaggedWrong ? '#8b4940' : '#7e4c35');
-    } else {
-      this.nameText.setColor('#24303a');
+    if (hasProposal && progress.proposed) {
+      const proposedBuilding = BUILDINGS_BY_KEY[progress.proposed];
+      this.showLabel(
+        proposedBuilding.shortName,
+        progress.flaggedWrong ? 'A revoir' : 'Proposition',
+        progress.flaggedWrong ? '#8b4940' : '#7e4c35',
+        progress.flaggedWrong ? '#8b4940' : '#6a726f',
+        progress.flaggedWrong ? 0xf5dfdb : 0xf8f3e7,
+        progress.flaggedWrong ? 0xdcaea5 : 0xd7c9b1
+      );
+      return;
     }
+
+    this.hideLabel();
   }
 
-  showAsIdentified(): void {
-    this.base.setFillStyle(this.definition.color, 0.9);
-    this.nameText.setText(this.definition.shortName);
+  private showLabel(
+    label: string,
+    status: string,
+    labelColor: string,
+    statusColor: string,
+    badgeFill: number,
+    badgeStroke: number
+  ): void {
+    this.labelBadge.setFillStyle(badgeFill, 0.96);
+    this.labelBadge.setStrokeStyle(2, badgeStroke, 0.96);
+    this.labelBadge.setVisible(true);
+    this.nameText.setText(label);
+    this.nameText.setColor(labelColor);
     this.nameText.setVisible(true);
-    this.nameText.setColor('#24303a');
+    this.statusText.setText(status);
+    this.statusText.setColor(statusColor);
+    this.statusText.setVisible(true);
+  }
+
+  private hideLabel(): void {
+    this.labelBadge.setVisible(false);
+    this.nameText.setVisible(false);
+    this.statusText.setVisible(false);
   }
 
   destroyBuilding(): void {
@@ -164,9 +194,10 @@ export class BuildingZone {
     this.door.destroy();
     this.numberBadge.destroy();
     this.numberText.destroy();
+    this.labelBadge.destroy();
     this.nameText.destroy();
+    this.statusText.destroy();
     this.halo.destroy();
-    this.missionHalo.destroy();
     this.solid.destroy();
   }
 }

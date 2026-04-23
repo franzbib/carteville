@@ -19,9 +19,12 @@
 }
 
 html,
-body {
+body,
+#app {
   margin: 0;
-  min-height: 100%;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -39,16 +42,17 @@ input {
 }
 
 #app {
-  min-height: 100vh;
+  height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 12px;
 }
 
 .game-shell {
   position: relative;
-  width: min(96vw, 1400px);
+  width: min(96vw, calc((100dvh - 24px) * 35 / 24));
+  height: min(calc(100dvh - 24px), calc(96vw * 24 / 35));
   aspect-ratio: 35 / 24;
   border-radius: 28px;
   overflow: hidden;
@@ -84,7 +88,6 @@ input {
 .hud-panel,
 .hud-dialogue,
 .modal-card,
-.mission-panel,
 .notebook-panel,
 .prompt-pill,
 .toast-stack {
@@ -105,7 +108,7 @@ input {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  max-width: 72%;
+  max-width: 74%;
 }
 
 .hud-chip {
@@ -209,12 +212,13 @@ input {
   background: rgba(246, 240, 227, 0.94);
   box-shadow: 0 10px 24px rgba(49, 36, 21, 0.16);
   font-size: 14px;
+  max-width: min(780px, calc(100% - 320px));
+  text-align: center;
 }
 
 .prompt-pill.hidden,
 .hud-dialogue.hidden,
 .notebook-panel.hidden,
-.mission-panel.hidden,
 .panel-overlay.hidden,
 .modal-overlay.hidden,
 .toast.hidden {
@@ -265,8 +269,7 @@ input {
 }
 
 .modal-card,
-.notebook-panel,
-.mission-panel {
+.notebook-panel {
   width: min(760px, 100%);
   max-height: 85%;
   overflow: auto;
@@ -305,7 +308,6 @@ input {
 }
 
 .clue-list,
-.mission-list,
 .label-choices {
   display: grid;
   gap: 12px;
@@ -313,7 +315,6 @@ input {
 }
 
 .clue-item,
-.mission-item,
 .label-choice {
   padding: 14px 16px;
   border-radius: 18px;
@@ -326,25 +327,6 @@ input {
   color: #857d72;
   background: rgba(199, 188, 169, 0.3);
   font-style: italic;
-}
-
-.mission-meta {
-  margin-top: 8px;
-  color: var(--ink-soft);
-  font-size: 13px;
-}
-
-.mission-item.done {
-  border-color: rgba(79, 128, 88, 0.22);
-  background: rgba(117, 154, 96, 0.14);
-}
-
-.mission-item.done .task-check {
-  color: var(--success);
-}
-
-.mission-item.locked {
-  opacity: 0.55;
 }
 
 .label-grid {
@@ -413,7 +395,7 @@ input {
 
   .game-shell {
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     aspect-ratio: auto;
     border-radius: 0;
   }
@@ -445,7 +427,6 @@ input {
   .prompt-pill {
     bottom: 196px;
     max-width: calc(100% - 24px);
-    text-align: center;
   }
 
   .toast-stack {

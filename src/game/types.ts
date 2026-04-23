@@ -1,6 +1,6 @@
 export type GameMode = 'easy' | 'normal' | 'review';
 
-export type Phase = 'identify' | 'phase2-intro' | 'missions' | 'victory';
+export type Phase = 'identify' | 'complete';
 
 export type BuildingName =
   | 'hopital'
@@ -10,7 +10,7 @@ export type BuildingName =
   | 'bibliotheque'
   | 'gare'
   | 'cinema'
-  | 'theatre'
+  | 'ispa'
   | 'marche';
 
 export interface BuildingProgress {
@@ -28,8 +28,6 @@ export interface SaveData {
   cluesDiscovered: string[];
   buildingProgress: Record<number, BuildingProgress>;
   phase: Phase;
-  currentMissionSeries: number;
-  completedMissionTaskIds: string[];
 }
 
 export interface RectLike {

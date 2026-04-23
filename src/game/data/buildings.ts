@@ -14,9 +14,9 @@ export const BUILDING_OPTIONS: BuildingDefinition[] = [
   {
     id: 1,
     key: 'hopital',
-    name: 'hôpital',
-    article: "l'hôpital",
-    shortName: 'Hôpital',
+    name: 'hopital',
+    article: "l'hopital",
+    shortName: 'Hopital',
     labelKey: 'H',
     color: 0xc06c65
   },
@@ -32,9 +32,9 @@ export const BUILDING_OPTIONS: BuildingDefinition[] = [
   {
     id: 3,
     key: 'ecole',
-    name: 'école',
-    article: "l'école",
-    shortName: 'École',
+    name: 'ecole',
+    article: "l'ecole",
+    shortName: 'Ecole',
     labelKey: 'E',
     color: 0x6d9f71
   },
@@ -50,9 +50,9 @@ export const BUILDING_OPTIONS: BuildingDefinition[] = [
   {
     id: 5,
     key: 'bibliotheque',
-    name: 'bibliothèque',
-    article: 'la bibliothèque',
-    shortName: 'Bibliothèque',
+    name: 'bibliotheque',
+    article: 'la bibliotheque',
+    shortName: 'Bibliotheque',
     labelKey: 'B',
     color: 0x8771b4
   },
@@ -68,27 +68,27 @@ export const BUILDING_OPTIONS: BuildingDefinition[] = [
   {
     id: 7,
     key: 'cinema',
-    name: 'cinéma',
-    article: 'le cinéma',
-    shortName: 'Cinéma',
+    name: 'cinema',
+    article: 'le cinema',
+    shortName: 'Cinema',
     labelKey: 'C',
     color: 0xd76c78
   },
   {
     id: 8,
-    key: 'theatre',
-    name: 'théâtre',
-    article: 'le théâtre',
-    shortName: 'Théâtre',
-    labelKey: 'T',
+    key: 'ispa',
+    name: "L'ISPA",
+    article: "L'ISPA",
+    shortName: "L'ISPA",
+    labelKey: 'I',
     color: 0xb26f45
   },
   {
     id: 9,
     key: 'marche',
-    name: 'marché',
-    article: 'le marché',
-    shortName: 'Marché',
+    name: 'marche',
+    article: 'le marche',
+    shortName: 'Marche',
     labelKey: 'M',
     color: 0x7aa056
   }

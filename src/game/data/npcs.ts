@@ -22,10 +22,10 @@ export const NPCS: NPCData[] = [
     lines: [
       {
         clueId: 'market-square',
-        text: 'Le marché est bien sur la place des Grands-Hommes.'
+        text: 'Le marche est bien sur la place des Grands-Hommes.'
       }
     ],
-    repeatLine: 'Je passe souvent par la place des Grands-Hommes pour le marché.'
+    repeatLine: 'Je passe souvent sur la place des Grands-Hommes pour aller au marche.'
   },
   {
     id: 'malik',
@@ -35,10 +35,10 @@ export const NPCS: NPCData[] = [
     lines: [
       {
         clueId: 'school-opposite-pharmacy',
-        text: "L'école est juste en face de la pharmacie."
+        text: "L'ecole est juste en face de la pharmacie."
       }
     ],
-    repeatLine: "Depuis ici, on voit bien que l'école fait face à la pharmacie."
+    repeatLine: "Depuis ici, on voit bien que l'ecole fait face a la pharmacie."
   },
   {
     id: 'sophie',
@@ -47,15 +47,16 @@ export const NPCS: NPCData[] = [
     y: 270,
     lines: [
       {
-        clueId: 'hospital-rue-rousseau',
-        text: "L'hôpital est dans la rue Rousseau, à côté de la place."
+        clueId: 'hospital-francs-muriers',
+        text: "L'hopital est dans la rue des francs muriers, a cote de la place."
       },
       {
         clueId: 'post-right-hospital',
-        text: "Et la poste est à droite de l'hôpital."
+        text: "Et la poste est a droite de l'hopital."
       }
     ],
-    repeatLine: "Sur la rue Rousseau, l'hôpital vient avant la poste quand on regarde vers la droite."
+    repeatLine:
+      "Dans la rue des francs muriers, l'hopital vient avant la poste quand on regarde vers la droite."
   },
   {
     id: 'hugo',
@@ -65,23 +66,23 @@ export const NPCS: NPCData[] = [
     lines: [
       {
         clueId: 'library-end-foch',
-        text: "La bibliothèque se trouve au bout de l'avenue Foch."
+        text: "La bibliotheque se trouve au bout de l'avenue Foch."
       }
     ],
-    repeatLine: "La bibliothèque ferme tard, tout au bout de l'avenue Foch."
+    repeatLine: "La bibliotheque est tout au bout de l'avenue Foch."
   },
   {
     id: 'ines',
-    name: 'Inès',
+    name: 'Ines',
     x: 792,
     y: 842,
     lines: [
       {
         clueId: 'cinema-between',
-        text: 'Le cinéma est entre la gare et le théâtre.'
+        text: "Le cinema est entre la gare et L'ISPA."
       }
     ],
-    repeatLine: 'Pour les sorties du soir, le cinéma est coincé entre la gare et le théâtre.'
+    repeatLine: "Pour les sorties du soir, le cinema est coince entre la gare et L'ISPA."
   },
   {
     id: 'nadia',
@@ -94,11 +95,11 @@ export const NPCS: NPCData[] = [
         text: "La gare est dans l'avenue Foch."
       },
       {
-        clueId: 'theatre-corner',
-        text: "Le théâtre est au coin du boulevard des Maréchaux et de l'avenue Foch."
+        clueId: 'ispa-corner',
+        text: "L'ISPA est au coin du boulevard des Marechaux et de l'avenue Foch."
       }
     ],
-    repeatLine: "Au croisement du boulevard et de l'avenue Foch, on ne peut pas rater le théâtre."
+    repeatLine: "Au croisement du boulevard et de l'avenue Foch, on ne peut pas rater L'ISPA."
   },
   {
     id: 'paul',
@@ -108,7 +109,7 @@ export const NPCS: NPCData[] = [
     lines: [
       {
         clueId: 'pharmacy-on-square',
-        text: 'La pharmacie donne sur la place du marché.'
+        text: 'La pharmacie donne sur la place des Grands-Hommes.'
       }
     ],
     repeatLine: 'La pharmacie est juste au bord de la place.'

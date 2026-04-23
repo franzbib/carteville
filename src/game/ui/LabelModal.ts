@@ -19,13 +19,13 @@ export class LabelModal {
     this.overlay.className = 'modal-overlay hidden';
     this.overlay.innerHTML = `
       <div class="modal-card">
-        <p class="panel-kicker">Étiquetage</p>
+        <p class="panel-kicker">Etiquetage</p>
         <h2 class="panel-heading" data-title></h2>
         <p class="panel-text label-subtitle" data-subtitle></p>
         <div class="label-grid">
           <div class="label-choices" data-choices></div>
         </div>
-        <p class="panel-close">Utilisez les lettres indiquées, ou <strong>Échap</strong> pour fermer.</p>
+        <p class="panel-close">Utilisez les lettres indiquees, ou <strong>Echap</strong> pour fermer.</p>
       </div>
     `;
     container.appendChild(this.overlay);
@@ -38,15 +38,15 @@ export class LabelModal {
   show(options: LabelModalOptions): void {
     this.open = true;
     this.overlay.classList.remove('hidden');
-    this.title.textContent = `Bâtiment ${options.buildingNumber}`;
+    this.title.textContent = `Batiment ${options.buildingNumber}`;
 
     if (options.currentProposal) {
-      this.subtitle.textContent = `Proposition actuelle : ${BUILDINGS_BY_KEY[options.currentProposal].shortName}. Mode ${options.mode === 'easy' ? 'facile' : options.mode === 'normal' ? 'normal' : 'révision'}.`;
+      this.subtitle.textContent = `Proposition actuelle : ${BUILDINGS_BY_KEY[options.currentProposal].shortName}. Mode ${options.mode === 'easy' ? 'facile' : options.mode === 'normal' ? 'normal' : 'revision'}.`;
     } else {
       this.subtitle.textContent =
         options.mode === 'easy'
-          ? 'En mode facile, la réponse est vérifiée immédiatement.'
-          : 'Choisissez le nom qui correspond à ce bâtiment.';
+          ? 'En mode facile, la reponse est verifiee immediatement.'
+          : 'Choisissez le nom qui correspond a ce batiment.';
     }
 
     this.choices.innerHTML = '';

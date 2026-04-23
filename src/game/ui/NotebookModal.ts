@@ -12,13 +12,13 @@ export class NotebookModal {
     this.overlay.innerHTML = `
       <div class="notebook-panel">
         <p class="panel-kicker">Carnet</p>
-        <h2 class="panel-heading">Indices découverts</h2>
+        <h2 class="panel-heading">Indices decouverts</h2>
         <p class="panel-text">
-          Recoupez les informations recueillies auprès des habitants pour retrouver le bon nom de chaque bâtiment.
+          Recoupez les informations donnees par les habitants pour retrouver le bon nom de chaque batiment.
         </p>
         <div class="status-pill" data-counter></div>
         <div class="clue-list" data-list></div>
-        <p class="panel-close">Appuyez sur <strong>C</strong> ou <strong>Échap</strong> pour fermer.</p>
+        <p class="panel-close">Appuyez sur <strong>C</strong> ou <strong>Echap</strong> pour fermer.</p>
       </div>
     `;
     container.appendChild(this.overlay);
@@ -29,7 +29,7 @@ export class NotebookModal {
 
   render(discoveredClues: string[]): void {
     const discovered = new Set(discoveredClues);
-    this.counter.textContent = `${discovered.size} / ${CLUES.length} indices trouvés`;
+    this.counter.textContent = `${discovered.size} / ${CLUES.length} indices trouves`;
 
     this.list.innerHTML = '';
 
@@ -37,7 +37,7 @@ export class NotebookModal {
       const item = document.createElement('div');
       const visible = discovered.has(clue.id);
       item.className = `clue-item ${visible ? '' : 'locked'}`.trim();
-      item.textContent = visible ? `${index + 1}. ${clue.text}` : `${index + 1}. Indice non découvert.`;
+      item.textContent = visible ? `${index + 1}. ${clue.text}` : `${index + 1}. Indice non decouvert.`;
       this.list.appendChild(item);
     });
   }

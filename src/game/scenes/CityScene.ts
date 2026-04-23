@@ -2,17 +2,26 @@ import Phaser from 'phaser';
 
 import { BUILDING_OPTIONS, BUILDINGS_BY_KEY, TOTAL_BUILDINGS } from '../data/buildings';
 import { TOTAL_CLUES } from '../data/clues';
-import { MAP_HEIGHT, MAP_WIDTH, PARKING_RECT, PLACE_RECT, ROAD_RECTS, TREE_POINTS, BENCH_POINTS, BUILDING_LAYOUTS, LAMP_POINTS, SPAWN_POINT } from '../data/mapLayout';
-import { MISSION_SERIES, type MissionTask } from '../data/missions';
+import {
+  BENCH_POINTS,
+  BUILDING_LAYOUTS,
+  LAMP_POINTS,
+  MAP_HEIGHT,
+  MAP_WIDTH,
+  PARKING_RECT,
+  PLACE_RECT,
+  ROAD_RECTS,
+  SPAWN_POINT,
+  TREE_POINTS
+} from '../data/mapLayout';
 import { NPCS } from '../data/npcs';
 import { BuildingZone } from '../entities/BuildingZone';
 import { NPC } from '../entities/NPC';
 import { Player } from '../entities/Player';
-import { LabelModal } from '../ui/LabelModal';
-import { MissionPanel } from '../ui/MissionPanel';
-import { NotebookModal } from '../ui/NotebookModal';
-import { HUD } from '../ui/HUD';
 import type { BuildingName, GameMode, SaveData } from '../types';
+import { HUD } from '../ui/HUD';
+import { LabelModal } from '../ui/LabelModal';
+import { NotebookModal } from '../ui/NotebookModal';
 import { audioManager } from '../utils/audio';
 import { loadSaveData, resetSave, saveGame } from '../utils/save';
 
@@ -34,7 +43,6 @@ export class CityScene extends Phaser.Scene {
   private npcs: NPC[] = [];
   private hud!: HUD;
   private notebook!: NotebookModal;
-  private missionPanel!: MissionPanel;
   private labelModal!: LabelModal;
   private keys!: KeyboardKeys;
   private activeLabelBuilding?: BuildingZone;
@@ -62,14 +70,13 @@ export class CityScene extends Phaser.Scene {
     this.setupInput();
     this.createUI();
     this.refreshVisualState();
-    this.refreshMissionHighlights();
     this.updateHud();
     this.saveSnapshot();
 
     if (!this.saveData.tutorialSeen && this.saveData.mode !== 'review') {
       this.showDialogue(
-        'Repères',
-        'Explorez le quartier, parlez avec les habitants en appuyant sur E, puis utilisez L près des bâtiments pour proposer un nom.'
+        'Reperes',
+        "Explorez le quartier, parlez avec les habitants avec E, puis utilisez L pres des batiments pour proposer un nom."
       );
       this.dialogueIsTutorial = true;
       this.saveData.tutorialSeen = true;
@@ -80,7 +87,6 @@ export class CityScene extends Phaser.Scene {
       this.cleanupCallbacks.forEach((callback) => callback());
       this.hud.destroy();
       this.notebook.destroy();
-      this.missionPanel.destroy();
       this.labelModal.destroy();
       this.buildings.forEach((building) => building.destroyBuilding());
       this.npcs.forEach((npc) => npc.destroyNPC());
@@ -98,12 +104,12 @@ export class CityScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#d8cbb5');
 
     const graphics = this.add.graphics();
-    graphics.fillStyle(0xd9c8a8, 1);
+    graphics.fillStyle(0xd8cbb3, 1);
     graphics.fillRect(0, 0, MAP_WIDTH, MAP_HEIGHT);
     graphics.fillStyle(0xcebb99, 0.55);
     graphics.fillRoundedRect(48, 56, MAP_WIDTH - 96, MAP_HEIGHT - 112, 36);
 
-    graphics.fillStyle(0xc4d4b2, 0.86);
+    graphics.fillStyle(0xc8d7b5, 0.88);
     graphics.fillRoundedRect(78, 86, 302, 178, 28);
     graphics.fillRoundedRect(82, 304, 242, 250, 28);
     graphics.fillRoundedRect(92, 602, 334, 236, 32);
@@ -112,8 +118,8 @@ export class CityScene extends Phaser.Scene {
     graphics.fillRoundedRect(884, 610, 350, 230, 30);
 
     ROAD_RECTS.forEach((road) => {
-      graphics.fillStyle(0xe5e3df, 1);
-      graphics.lineStyle(2, 0xc4c0bb, 0.9);
+      graphics.fillStyle(0xe8e4de, 1);
+      graphics.lineStyle(2, 0xc5bfb5, 0.9);
       graphics.fillRoundedRect(road.x, road.y, road.width, road.height, 18);
       graphics.strokeRoundedRect(road.x, road.y, road.width, road.height, 18);
 
@@ -155,34 +161,39 @@ export class CityScene extends Phaser.Scene {
     }
 
     this.add
-      .text(PLACE_RECT.x + PLACE_RECT.width / 2, PLACE_RECT.y + 24, 'Place des Grands-Hommes', {
+      .text(PLACE_RECT.x + PLACE_RECT.width / 2, PLACE_RECT.y + 24, 'place des Grands-Hommes', {
         fontFamily: 'Georgia',
         fontSize: '28px',
         color: '#7e4c35',
         fontStyle: 'bold'
       })
-      .setOrigin(0.5, 0);
+      .setOrigin(0.5, 0)
+      .setDepth(24);
 
     this.add
-      .text(PARKING_RECT.x + PARKING_RECT.width / 2, PARKING_RECT.y + 12, 'Parking', {
+      .text(PARKING_RECT.x + PARKING_RECT.width / 2, PARKING_RECT.y + 12, 'parking', {
         fontFamily: 'Trebuchet MS',
-        fontSize: '24px',
+        fontSize: '23px',
         color: '#24303a',
         fontStyle: 'bold'
       })
-      .setOrigin(0.5, 0);
+      .setOrigin(0.5, 0)
+      .setDepth(24);
 
     ROAD_RECTS.filter((road) => road.label).forEach((road) => {
       this.add
         .text(road.labelX ?? road.x, road.labelY ?? road.y, road.label ?? '', {
-          fontFamily: 'Trebuchet MS',
-          fontSize: '25px',
-          color: '#5e666e',
-          fontStyle: 'bold'
+          fontFamily: 'Georgia',
+          fontSize: '24px',
+          color: '#5a6470',
+          fontStyle: 'bold',
+          backgroundColor: '#f3ece0cc',
+          padding: { left: 10, right: 10, top: 5, bottom: 5 }
         })
         .setOrigin(0.5)
         .setRotation(Phaser.Math.DegToRad(road.rotation ?? 0))
-        .setAlpha(0.88);
+        .setAlpha(0.92)
+        .setDepth(24);
     });
 
     TREE_POINTS.forEach((point) => {
@@ -246,9 +257,20 @@ export class CityScene extends Phaser.Scene {
       this.physics.add.collider(this.player, building.solid);
     });
 
+    this.npcs.forEach((npc) => {
+      this.physics.add.collider(this.player, npc);
+    });
+
     if (this.parkingZone) {
       this.physics.add.collider(this.player, this.parkingZone);
     }
+
+    const camera = this.cameras.main;
+    camera.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
+    camera.startFollow(this.player, true, 0.1, 0.1);
+    camera.setLerp(0.12, 0.12);
+    camera.setZoom(this.scale.width >= 1100 ? 1.12 : 1.02);
+    camera.roundPixels = false;
   }
 
   private setupInput(): void {
@@ -277,7 +299,7 @@ export class CityScene extends Phaser.Scene {
     const container = document.getElementById('ui-layer');
 
     if (!container) {
-      throw new Error("La couche d'interface n'a pas été trouvée.");
+      throw new Error("La couche d'interface n'a pas ete trouvee.");
     }
 
     this.hud = new HUD(container, {
@@ -299,7 +321,6 @@ export class CityScene extends Phaser.Scene {
       }
     });
     this.notebook = new NotebookModal(container);
-    this.missionPanel = new MissionPanel(container);
     this.labelModal = new LabelModal(container);
   }
 
@@ -334,24 +355,15 @@ export class CityScene extends Phaser.Scene {
     const parts: string[] = [];
 
     if (nearestNpc) {
-      parts.push(`<kbd>E</kbd> parler à ${nearestNpc.dataModel.name}`);
+      parts.push(`<kbd>E</kbd> parler a ${nearestNpc.dataModel.name}`);
     }
 
     if (nearestBuilding) {
-      if (this.saveData.phase === 'identify' && this.saveData.mode !== 'review') {
-        parts.push(`<kbd>L</kbd> étiqueter le bâtiment ${nearestBuilding.id}`);
+      if (this.saveData.mode !== 'review' && this.saveData.phase !== 'complete') {
+        parts.push(`<kbd>L</kbd> etiqueter le batiment ${nearestBuilding.id}`);
       }
 
-      if (this.saveData.phase === 'missions') {
-        const mission = this.getPendingMissionForBuilding(nearestBuilding.definition.key);
-        if (mission) {
-          parts.push(`<kbd>E</kbd> ${mission.label.toLowerCase()}`);
-        } else {
-          parts.push(`<kbd>E</kbd> consulter ${nearestBuilding.definition.shortName.toLowerCase()}`);
-        }
-      } else if (this.saveData.phase === 'identify') {
-        parts.push(`<kbd>E</kbd> observer le bâtiment ${nearestBuilding.id}`);
-      }
+      parts.push(`<kbd>E</kbd> observer le batiment ${nearestBuilding.id}`);
     }
 
     this.hud.setPrompt(parts.length > 0 ? parts.join(' · ') : null);
@@ -384,26 +396,10 @@ export class CityScene extends Phaser.Scene {
       return;
     }
 
-    if (this.missionPanel.isOpen()) {
-      if (event.code === 'Escape' || event.code === 'KeyM') {
-        this.missionPanel.hide();
-      }
-      return;
-    }
-
     switch (event.code) {
       case 'KeyC':
         this.notebook.render(this.saveData.cluesDiscovered);
         this.notebook.toggle();
-        audioManager.playOpen();
-        return;
-      case 'KeyM':
-        this.missionPanel.render({
-          phase: this.saveData.phase,
-          currentSeriesIndex: this.saveData.currentMissionSeries,
-          completedTaskIds: this.saveData.completedMissionTaskIds
-        });
-        this.missionPanel.toggle();
         audioManager.playOpen();
         return;
       case 'KeyL':
@@ -432,7 +428,7 @@ export class CityScene extends Phaser.Scene {
         this.saveData.cluesDiscovered.push(...newClues);
         this.saveData.cluesDiscovered = Array.from(new Set(this.saveData.cluesDiscovered));
         this.notebook.render(this.saveData.cluesDiscovered);
-        this.hud.showToast('Indice ajouté au carnet', 'success');
+        this.hud.showToast('Indice ajoute au carnet', 'success');
         audioManager.playSuccess();
         this.saveSnapshot();
       }
@@ -447,27 +443,14 @@ export class CityScene extends Phaser.Scene {
       return;
     }
 
-    if (this.saveData.phase === 'missions') {
-      const task = this.getPendingMissionForBuilding(nearestBuilding.definition.key);
-      if (task) {
-        this.completeMissionTask(task, nearestBuilding.definition.shortName);
-      } else {
-        this.showDialogue(
-          nearestBuilding.definition.shortName,
-          `Aucune tâche active ne demande actuellement de passer par ${nearestBuilding.definition.article}.`
-        );
-      }
-      return;
-    }
-
     const progress = this.saveData.buildingProgress[nearestBuilding.id];
     const message = progress.validated
-      ? `${nearestBuilding.definition.shortName} identifié.`
+      ? `${nearestBuilding.definition.shortName} est correctement identifie.`
       : progress.proposed
-        ? `Bâtiment ${nearestBuilding.id}. Proposition en cours : ${BUILDINGS_BY_KEY[progress.proposed].shortName}.`
-        : `Bâtiment ${nearestBuilding.id}. Utilisez L pour lui attribuer un nom.`;
+        ? `Batiment ${nearestBuilding.id}. Proposition en cours : ${BUILDINGS_BY_KEY[progress.proposed].shortName}.`
+        : `Batiment ${nearestBuilding.id}. Utilisez L pour lui attribuer un nom.`;
 
-    this.showDialogue('Repère', message);
+    this.showDialogue('Repere', message);
   }
 
   private showDialogue(name: string, text: string): void {
@@ -482,14 +465,14 @@ export class CityScene extends Phaser.Scene {
   }
 
   private tryOpenLabelModal(): void {
-    if (this.saveData.phase !== 'identify' || this.saveData.mode === 'review') {
-      this.hud.showToast('Les bâtiments sont déjà connus ou les missions sont actives.', 'info');
+    if (this.saveData.mode === 'review' || this.saveData.phase === 'complete') {
+      this.hud.showToast('Le plan est deja resolu dans ce mode.', 'info');
       return;
     }
 
     const nearestBuilding = this.getNearestBuilding();
     if (!nearestBuilding) {
-      this.hud.showToast('Approchez-vous davantage d’un bâtiment numéroté.', 'info');
+      this.hud.showToast("Approchez-vous davantage d'un batiment numerote.", 'info');
       return;
     }
 
@@ -523,17 +506,17 @@ export class CityScene extends Phaser.Scene {
       if (choice.key === target.definition.key) {
         progress.validated = true;
         progress.flaggedWrong = false;
-        this.hud.showToast('Bonne réponse.', 'success');
+        this.hud.showToast('Bonne reponse.', 'success');
         audioManager.playSuccess();
       } else {
         progress.validated = false;
         progress.flaggedWrong = true;
-        this.hud.showToast('Ce n’est pas encore le bon lieu.', 'error');
+        this.hud.showToast("Ce n'est pas encore le bon lieu.", 'error');
         audioManager.playError();
       }
     } else {
       progress.flaggedWrong = false;
-      this.hud.showToast('Étiquette enregistrée.', 'info');
+      this.hud.showToast('Etiquette enregistree.', 'info');
       const allLabeled = this.buildings.every((building) => {
         const buildingProgress = this.saveData.buildingProgress[building.id];
         return buildingProgress.validated || Boolean(buildingProgress.proposed);
@@ -574,124 +557,39 @@ export class CityScene extends Phaser.Scene {
     });
 
     if (remaining === 0) {
-      this.hud.showToast('Tous les bâtiments sont correctement identifiés.', 'success');
+      this.hud.showToast('Tous les batiments sont correctement identifies.', 'success');
       audioManager.playSuccess();
       return;
     }
 
     if (corrected > 0) {
-      this.hud.showToast(`${corrected} bâtiment(s) validé(s). ${remaining} restent à corriger.`, 'info');
+      this.hud.showToast(`${corrected} batiment(s) valide(s). ${remaining} restent a corriger.`, 'info');
     } else {
-      this.hud.showToast(`${remaining} bâtiment(s) restent à corriger.`, 'error');
+      this.hud.showToast(`${remaining} batiment(s) restent a corriger.`, 'error');
       audioManager.playError();
     }
   }
 
   private finishIdentificationPhase(): void {
-    if (this.saveData.phase !== 'identify') {
+    if (this.saveData.phase === 'complete') {
       return;
     }
 
-    this.saveData.phase = 'phase2-intro';
+    this.saveData.phase = 'complete';
     this.refreshVisualState();
     this.updateHud();
     this.saveSnapshot();
-    this.time.delayedCall(450, () => {
-      this.scene.start('PhaseTransitionScene');
-    });
-  }
-
-  private getPendingMissionForBuilding(buildingName: BuildingName): MissionTask | undefined {
-    if (this.saveData.phase !== 'missions') {
-      return undefined;
-    }
-
-    const series = MISSION_SERIES[Math.min(this.saveData.currentMissionSeries, MISSION_SERIES.length - 1)];
-    const completed = new Set(this.saveData.completedMissionTaskIds);
-
-    return series.tasks.find(
-      (task) => !completed.has(task.id) && task.targets.includes(buildingName)
-    );
-  }
-
-  private completeMissionTask(task: MissionTask, locationName: string): void {
-    if (this.saveData.completedMissionTaskIds.includes(task.id)) {
-      return;
-    }
-
-    this.saveData.completedMissionTaskIds.push(task.id);
-    this.missionPanel.render({
-      phase: this.saveData.phase,
-      currentSeriesIndex: this.saveData.currentMissionSeries,
-      completedTaskIds: this.saveData.completedMissionTaskIds
-    });
-    this.hud.showToast(`${task.label} validé à ${locationName}.`, 'success');
-    audioManager.playSuccess();
-
-    const series = MISSION_SERIES[this.saveData.currentMissionSeries];
-    const completed = new Set(this.saveData.completedMissionTaskIds);
-    const seriesDone = series.tasks.every((seriesTask) => completed.has(seriesTask.id));
-
-    if (seriesDone) {
-      if (this.saveData.currentMissionSeries === MISSION_SERIES.length - 1) {
-        this.saveData.phase = 'victory';
-        this.missionPanel.render({
-          phase: this.saveData.phase,
-          currentSeriesIndex: this.saveData.currentMissionSeries,
-          completedTaskIds: this.saveData.completedMissionTaskIds
-        });
-        this.updateHud();
-        this.saveSnapshot();
-        this.time.delayedCall(600, () => {
-          this.scene.start('VictoryScene');
-        });
-        return;
-      }
-
-      this.saveData.currentMissionSeries += 1;
-      const nextSeries = MISSION_SERIES[this.saveData.currentMissionSeries];
-      this.missionPanel.render({
-        phase: this.saveData.phase,
-        currentSeriesIndex: this.saveData.currentMissionSeries,
-        completedTaskIds: this.saveData.completedMissionTaskIds
-      });
-      this.hud.showToast(`${series.title} terminée. ${nextSeries.title} débloquée.`, 'info');
-      this.showDialogue('Nouvelle série', nextSeries.intro);
-    }
-
-    this.refreshMissionHighlights();
-    this.updateHud();
-    this.saveSnapshot();
+    this.hud.showToast('Plan reconstitue. Vous pouvez encore explorer librement la ville.', 'success');
+    this.showDialogue('Ville', 'Tous les batiments sont identifies. Le quartier reste accessible pour reviser les reperes.');
   }
 
   private refreshVisualState(): void {
-    const revealAll = this.saveData.mode === 'review' || this.saveData.phase !== 'identify';
+    const revealAll = this.saveData.mode === 'review' || this.saveData.phase === 'complete';
     this.buildings.forEach((building) => {
       const progress = this.saveData.buildingProgress[building.id];
       building.applyProgress(progress, revealAll);
     });
     this.notebook.render(this.saveData.cluesDiscovered);
-    this.missionPanel.render({
-      phase: this.saveData.phase,
-      currentSeriesIndex: this.saveData.currentMissionSeries,
-      completedTaskIds: this.saveData.completedMissionTaskIds
-    });
-  }
-
-  private refreshMissionHighlights(): void {
-    const pendingTargets = new Set<BuildingName>();
-
-    if (this.saveData.phase === 'missions') {
-      const series = MISSION_SERIES[Math.min(this.saveData.currentMissionSeries, MISSION_SERIES.length - 1)];
-      const completed = new Set(this.saveData.completedMissionTaskIds);
-      series.tasks
-        .filter((task) => !completed.has(task.id))
-        .forEach((task) => task.targets.forEach((target) => pendingTargets.add(target)));
-    }
-
-    this.buildings.forEach((building) =>
-      building.setMissionTarget(pendingTargets.has(building.definition.key))
-    );
   }
 
   private updateHud(): void {
@@ -699,37 +597,23 @@ export class CityScene extends Phaser.Scene {
       cluesFound: this.saveData.mode === 'review' ? TOTAL_CLUES : this.saveData.cluesDiscovered.length,
       cluesTotal: TOTAL_CLUES,
       buildingsValidated: this.getValidatedCount(),
+      buildingsLabeled: this.getLabeledCount(),
       buildingsTotal: TOTAL_BUILDINGS,
-      missionSummary: this.getMissionSummary(),
+      planStatus: this.saveData.phase === 'complete' ? 'reconstitue' : 'a completer',
       modeLabel: this.modeLabel(this.saveData.mode),
-      phaseLabel: this.phaseLabel(this.saveData.phase),
       soundEnabled: this.saveData.soundEnabled
     });
   }
 
-  private getMissionSummary(): string {
-    if (this.saveData.phase === 'identify') {
-      return 'Bloquées';
-    }
-
-    if (this.saveData.phase === 'phase2-intro') {
-      return 'Ouverture';
-    }
-
-    if (this.saveData.phase === 'victory') {
-      return 'Terminées';
-    }
-
-    const series = MISSION_SERIES[Math.min(this.saveData.currentMissionSeries, MISSION_SERIES.length - 1)];
-    const completed = new Set(this.saveData.completedMissionTaskIds);
-    const doneCount = series.tasks.filter((task) => completed.has(task.id)).length;
-    return `${series.title} · ${doneCount} / ${series.tasks.length}`;
+  private getValidatedCount(): number {
+    return this.buildings.filter((building) => this.saveData.buildingProgress[building.id].validated).length;
   }
 
-  private getValidatedCount(): number {
-    return this.buildings.filter(
-      (building) => this.saveData.buildingProgress[building.id].validated
-    ).length;
+  private getLabeledCount(): number {
+    return this.buildings.filter((building) => {
+      const progress = this.saveData.buildingProgress[building.id];
+      return Boolean(progress.validated || progress.proposed);
+    }).length;
   }
 
   private getNearestNpc(): NPC | undefined {
@@ -767,12 +651,7 @@ export class CityScene extends Phaser.Scene {
   }
 
   private isOverlayOpen(): boolean {
-    return (
-      this.dialogueOpen ||
-      this.labelModal.isOpen() ||
-      this.notebook.isOpen() ||
-      this.missionPanel.isOpen()
-    );
+    return this.dialogueOpen || this.labelModal.isOpen() || this.notebook.isOpen();
   }
 
   private modeLabel(mode: GameMode): string {
@@ -782,19 +661,6 @@ export class CityScene extends Phaser.Scene {
     if (mode === 'normal') {
       return 'Normal';
     }
-    return 'Révision';
-  }
-
-  private phaseLabel(phase: SaveData['phase']): string {
-    switch (phase) {
-      case 'identify':
-        return 'Phase 1';
-      case 'phase2-intro':
-        return 'Transition';
-      case 'missions':
-        return 'Phase 2';
-      case 'victory':
-        return 'Victoire';
-    }
+    return 'Revision';
   }
 }

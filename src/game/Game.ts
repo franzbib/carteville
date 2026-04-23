@@ -4,8 +4,6 @@ import { MAP_HEIGHT, MAP_WIDTH } from './data/mapLayout';
 import { BootScene } from './scenes/BootScene';
 import { CityScene } from './scenes/CityScene';
 import { MenuScene } from './scenes/MenuScene';
-import { PhaseTransitionScene } from './scenes/PhaseTransitionScene';
-import { VictoryScene } from './scenes/VictoryScene';
 
 export class FrenchCityGame {
   readonly instance: Phaser.Game;
@@ -32,7 +30,7 @@ export class FrenchCityGame {
         antialias: true,
         pixelArt: false
       },
-      scene: [BootScene, MenuScene, CityScene, PhaseTransitionScene, VictoryScene]
+      scene: [BootScene, MenuScene, CityScene]
     });
   }
 }

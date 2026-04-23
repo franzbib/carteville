@@ -15,21 +15,25 @@ export interface NPCData {
 
 export const NPCS: NPCData[] = [
   {
-    id: 'julie',
-    name: 'Julie',
+    id: 'francois',
+    name: 'François',
     x: 616,
     y: 600,
     lines: [
       {
         clueId: 'market-square',
         text: 'Le marche est bien sur la place des Grands-Hommes.'
+      },
+      {
+        clueId: 'pharmacy-on-square',
+        text: 'La pharmacie donne sur la place des Grands-Hommes.'
       }
     ],
-    repeatLine: 'Je passe souvent sur la place des Grands-Hommes pour aller au marche.'
+    repeatLine: 'Sur la place des Grands-Hommes, le marche et la pharmacie servent de bons reperes.'
   },
   {
-    id: 'malik',
-    name: 'Malik',
+    id: 'rodolphe',
+    name: 'Rodolphe',
     x: 246,
     y: 522,
     lines: [
@@ -41,8 +45,8 @@ export const NPCS: NPCData[] = [
     repeatLine: "Depuis ici, on voit bien que l'ecole fait face a la pharmacie."
   },
   {
-    id: 'sophie',
-    name: 'Sophie',
+    id: 'heidi',
+    name: 'Heïdi',
     x: 706,
     y: 270,
     lines: [
@@ -59,8 +63,8 @@ export const NPCS: NPCData[] = [
       "Dans la rue des francs muriers, l'hopital vient avant la poste quand on regarde vers la droite."
   },
   {
-    id: 'hugo',
-    name: 'Hugo',
+    id: 'delphine',
+    name: 'Delphine',
     x: 386,
     y: 848,
     lines: [
@@ -72,8 +76,8 @@ export const NPCS: NPCData[] = [
     repeatLine: "La bibliotheque est tout au bout de l'avenue Foch."
   },
   {
-    id: 'ines',
-    name: 'Ines',
+    id: 'candice',
+    name: 'Candice',
     x: 792,
     y: 842,
     lines: [
@@ -85,8 +89,8 @@ export const NPCS: NPCData[] = [
     repeatLine: "Pour les sorties du soir, le cinema est coince entre la gare et L'ISPA."
   },
   {
-    id: 'nadia',
-    name: 'Nadia',
+    id: 'clement',
+    name: 'Clément',
     x: 1128,
     y: 590,
     lines: [
@@ -100,18 +104,5 @@ export const NPCS: NPCData[] = [
       }
     ],
     repeatLine: "Au croisement du boulevard et de l'avenue Foch, on ne peut pas rater L'ISPA."
-  },
-  {
-    id: 'paul',
-    name: 'Paul',
-    x: 930,
-    y: 422,
-    lines: [
-      {
-        clueId: 'pharmacy-on-square',
-        text: 'La pharmacie donne sur la place des Grands-Hommes.'
-      }
-    ],
-    repeatLine: 'La pharmacie est juste au bord de la place.'
   }
 ];

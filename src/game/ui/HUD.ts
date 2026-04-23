@@ -92,7 +92,7 @@ export class HUD {
               <li><kbd>B</kbd> bibliotheque</li>
               <li><kbd>G</kbd> gare</li>
               <li><kbd>C</kbd> cinema</li>
-              <li><kbd>T</kbd> theatre</li>
+              <li><kbd>I</kbd> L'ISPA</li>
               <li><kbd>M</kbd> marche</li>
             </ul>
           </div>

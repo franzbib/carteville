@@ -4,7 +4,6 @@ import { BUILDING_OPTIONS, BUILDINGS_BY_KEY, TOTAL_BUILDINGS } from '../data/bui
 import { TOTAL_CLUES } from '../data/clues';
 import {
   BENCH_POINTS,
-  BUILDING_LAYOUTS,
   LAMP_POINTS,
   MAP_HEIGHT,
   MAP_WIDTH,
@@ -18,7 +17,7 @@ import { NPCS } from '../data/npcs';
 import { BuildingZone } from '../entities/BuildingZone';
 import { NPC } from '../entities/NPC';
 import { Player } from '../entities/Player';
-import type { BuildingName, GameMode, SaveData } from '../types';
+import type { GameMode, SaveData } from '../types';
 import { HUD } from '../ui/HUD';
 import { LabelModal } from '../ui/LabelModal';
 import { NotebookModal } from '../ui/NotebookModal';
@@ -47,7 +46,6 @@ export class CityScene extends Phaser.Scene {
   private keys!: KeyboardKeys;
   private activeLabelBuilding?: BuildingZone;
   private dialogueOpen = false;
-  private dialogueIsTutorial = false;
   private parkingZone?: Phaser.GameObjects.Zone;
   private cleanupCallbacks: Array<() => void> = [];
 
@@ -78,7 +76,6 @@ export class CityScene extends Phaser.Scene {
         'Reperes',
         "Explorez le quartier, parlez avec les habitants avec E, puis utilisez L pres des batiments pour proposer un nom."
       );
-      this.dialogueIsTutorial = true;
       this.saveData.tutorialSeen = true;
       this.saveSnapshot();
     }
@@ -253,6 +250,7 @@ export class CityScene extends Phaser.Scene {
 
   private createPlayer(): void {
     this.player = new Player(this, SPAWN_POINT.x, SPAWN_POINT.y);
+
     this.buildings.forEach((building) => {
       this.physics.add.collider(this.player, building.solid);
     });
@@ -296,10 +294,10 @@ export class CityScene extends Phaser.Scene {
   }
 
   private createUI(): void {
-    const container = document.getElementById('ui-layer');
+    const container = document.getElementById('hud-dock');
 
     if (!container) {
-      throw new Error("La couche d'interface n'a pas ete trouvee.");
+      throw new Error("La zone d'interface n'a pas ete trouvee.");
     }
 
     this.hud = new HUD(container, {
@@ -318,26 +316,63 @@ export class CityScene extends Phaser.Scene {
 
         resetSave();
         this.scene.start('MenuScene');
+      },
+      onInteract: () => {
+        audioManager.unlock();
+        this.handleInteract();
+      },
+      onOpenLabel: () => {
+        audioManager.unlock();
+        this.tryOpenLabelModal();
+      },
+      onToggleNotebook: () => {
+        audioManager.unlock();
+        this.toggleNotebook();
+      },
+      onCloseActive: () => {
+        this.closeActiveElement();
       }
     });
-    this.notebook = new NotebookModal(container);
-    this.labelModal = new LabelModal(container);
+
+    this.notebook = new NotebookModal(container, {
+      onClose: () => {
+        this.notebook.hide();
+      }
+    });
+
+    this.labelModal = new LabelModal(container, {
+      onClose: () => {
+        this.closeLabelModal();
+      },
+      onSelect: (key) => {
+        this.handleLabelSelection(key.toUpperCase());
+      }
+    });
   }
 
   private updateMovement(): void {
     if (this.isOverlayOpen()) {
       this.player.stop();
+      this.hud.resetTouchVector();
       return;
     }
 
-    const horizontal =
+    const keyboardHorizontal =
       (this.keys.left.isDown || this.keys.q.isDown ? -1 : 0) +
       (this.keys.right.isDown || this.keys.d.isDown ? 1 : 0);
-    const vertical =
+    const keyboardVertical =
       (this.keys.up.isDown || this.keys.z.isDown ? -1 : 0) +
       (this.keys.down.isDown || this.keys.s.isDown ? 1 : 0);
 
-    this.player.move(horizontal, vertical);
+    const touchVector = this.hud.getTouchVector();
+    const useTouch =
+      this.hud.isTouchModeEnabled() &&
+      (Math.abs(touchVector.x) > 0.02 || Math.abs(touchVector.y) > 0.02);
+
+    this.player.move(
+      useTouch ? touchVector.x : keyboardHorizontal,
+      useTouch ? touchVector.y : keyboardVertical
+    );
   }
 
   private updatePromptsAndNearby(): void {
@@ -366,7 +401,7 @@ export class CityScene extends Phaser.Scene {
       parts.push(`<kbd>E</kbd> observer le batiment ${nearestBuilding.id}`);
     }
 
-    this.hud.setPrompt(parts.length > 0 ? parts.join(' · ') : null);
+    this.hud.setPrompt(parts.length > 0 ? parts.join(' | ') : null);
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
@@ -398,9 +433,7 @@ export class CityScene extends Phaser.Scene {
 
     switch (event.code) {
       case 'KeyC':
-        this.notebook.render(this.saveData.cluesDiscovered);
-        this.notebook.toggle();
-        audioManager.playOpen();
+        this.toggleNotebook();
         return;
       case 'KeyL':
         this.tryOpenLabelModal();
@@ -417,6 +450,15 @@ export class CityScene extends Phaser.Scene {
   }
 
   private handleInteract(): void {
+    if (this.labelModal.isOpen() || this.notebook.isOpen()) {
+      return;
+    }
+
+    if (this.dialogueOpen) {
+      this.hideDialogue();
+      return;
+    }
+
     const nearestNpc = this.getNearestNpc();
 
     if (nearestNpc) {
@@ -460,11 +502,14 @@ export class CityScene extends Phaser.Scene {
 
   private hideDialogue(): void {
     this.dialogueOpen = false;
-    this.dialogueIsTutorial = false;
     this.hud.hideDialogue();
   }
 
   private tryOpenLabelModal(): void {
+    if (this.dialogueOpen || this.notebook.isOpen() || this.labelModal.isOpen()) {
+      return;
+    }
+
     if (this.saveData.mode === 'review' || this.saveData.phase === 'complete') {
       this.hud.showToast('Le plan est deja resolu dans ce mode.', 'info');
       return;
@@ -489,6 +534,36 @@ export class CityScene extends Phaser.Scene {
   private closeLabelModal(): void {
     this.activeLabelBuilding = undefined;
     this.labelModal.hide();
+  }
+
+  private toggleNotebook(): void {
+    if (this.labelModal.isOpen()) {
+      return;
+    }
+
+    if (this.dialogueOpen) {
+      this.hideDialogue();
+    }
+
+    this.notebook.render(this.saveData.cluesDiscovered);
+    this.notebook.toggle();
+    audioManager.playOpen();
+  }
+
+  private closeActiveElement(): void {
+    if (this.labelModal.isOpen()) {
+      this.closeLabelModal();
+      return;
+    }
+
+    if (this.notebook.isOpen()) {
+      this.notebook.hide();
+      return;
+    }
+
+    if (this.dialogueOpen) {
+      this.hideDialogue();
+    }
   }
 
   private handleLabelSelection(key: string): void {
@@ -517,6 +592,7 @@ export class CityScene extends Phaser.Scene {
     } else {
       progress.flaggedWrong = false;
       this.hud.showToast('Etiquette enregistree.', 'info');
+
       const allLabeled = this.buildings.every((building) => {
         const buildingProgress = this.saveData.buildingProgress[building.id];
         return buildingProgress.validated || Boolean(buildingProgress.proposed);
@@ -548,6 +624,7 @@ export class CityScene extends Phaser.Scene {
         if (!progress.validated) {
           corrected += 1;
         }
+
         progress.validated = true;
         progress.flaggedWrong = false;
       } else if (!progress.validated) {
@@ -580,15 +657,20 @@ export class CityScene extends Phaser.Scene {
     this.updateHud();
     this.saveSnapshot();
     this.hud.showToast('Plan reconstitue. Vous pouvez encore explorer librement la ville.', 'success');
-    this.showDialogue('Ville', 'Tous les batiments sont identifies. Le quartier reste accessible pour reviser les reperes.');
+    this.showDialogue(
+      'Ville',
+      'Tous les batiments sont identifies. Le quartier reste accessible pour reviser les reperes.'
+    );
   }
 
   private refreshVisualState(): void {
     const revealAll = this.saveData.mode === 'review' || this.saveData.phase === 'complete';
+
     this.buildings.forEach((building) => {
       const progress = this.saveData.buildingProgress[building.id];
       building.applyProgress(progress, revealAll);
     });
+
     this.notebook.render(this.saveData.cluesDiscovered);
   }
 
@@ -606,7 +688,9 @@ export class CityScene extends Phaser.Scene {
   }
 
   private getValidatedCount(): number {
-    return this.buildings.filter((building) => this.saveData.buildingProgress[building.id].validated).length;
+    return this.buildings.filter(
+      (building) => this.saveData.buildingProgress[building.id].validated
+    ).length;
   }
 
   private getLabeledCount(): number {
@@ -658,9 +742,11 @@ export class CityScene extends Phaser.Scene {
     if (mode === 'easy') {
       return 'Facile';
     }
+
     if (mode === 'normal') {
       return 'Normal';
     }
+
     return 'Revision';
   }
 }

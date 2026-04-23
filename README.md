@@ -31,6 +31,15 @@ npm run build
 - `C` : ouvrir ou fermer le carnet
 - `Echap` : fermer la fenetre active
 
+## Telephone
+
+Le jeu propose maintenant une solution tactile :
+
+- joystick virtuel pour se deplacer ;
+- boutons `Action`, `Etiqueter`, `Carnet` et `Fermer` ;
+- choix d etiquettes cliquables directement au doigt ;
+- aide et panneaux places hors de la carte, pour ne pas masquer le plan.
+
 ## Modes
 
 - `Mode facile` : feedback immediat apres chaque etiquette
@@ -92,5 +101,5 @@ public/
 ## Remarques
 
 - Le jeu est pense d abord pour desktop.
-- Le rendu tient dans le viewport sans ascenseur de navigateur pendant la partie.
+- Sur petit ecran, l interface se reorganise sous la carte pour laisser le plan visible.
 - Les sons ne demarrent qu apres la premiere interaction utilisateur, pour respecter les politiques des navigateurs.

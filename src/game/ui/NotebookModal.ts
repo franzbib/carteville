@@ -1,30 +1,42 @@
 import { CLUES } from '../data/clues';
 
+interface NotebookModalCallbacks {
+  onClose: () => void;
+}
+
 export class NotebookModal {
-  private readonly overlay: HTMLDivElement;
+  private readonly root: HTMLDivElement;
   private readonly list: HTMLDivElement;
   private readonly counter: HTMLDivElement;
   private open = false;
 
-  constructor(container: HTMLElement) {
-    this.overlay = document.createElement('div');
-    this.overlay.className = 'panel-overlay hidden';
-    this.overlay.innerHTML = `
-      <div class="notebook-panel">
-        <p class="panel-kicker">Carnet</p>
-        <h2 class="panel-heading">Indices decouverts</h2>
-        <p class="panel-text">
-          Recoupez les informations donnees par les habitants pour retrouver le bon nom de chaque batiment.
-        </p>
-        <div class="status-pill" data-counter></div>
-        <div class="clue-list" data-list></div>
-        <p class="panel-close">Appuyez sur <strong>C</strong> ou <strong>Echap</strong> pour fermer.</p>
+  constructor(container: HTMLElement, callbacks: NotebookModalCallbacks) {
+    this.root = document.createElement('div');
+    this.root.className = 'dock-panel notebook-panel hidden';
+    this.root.innerHTML = `
+      <div class="dock-panel-header">
+        <div>
+          <p class="panel-kicker">Carnet</p>
+          <h2 class="panel-heading">Indices decouverts</h2>
+        </div>
+        <button type="button" class="panel-dismiss" data-close>Fermer</button>
       </div>
+      <p class="panel-text">
+        Recoupez les informations donnees par les habitants pour retrouver le bon nom de chaque batiment.
+      </p>
+      <div class="status-pill" data-counter></div>
+      <div class="clue-list" data-list></div>
+      <p class="panel-close">Clavier : <strong>C</strong> ou <strong>Echap</strong>. Tactile : bouton <strong>Fermer</strong>.</p>
     `;
-    container.appendChild(this.overlay);
+    container.appendChild(this.root);
 
-    this.list = this.overlay.querySelector('[data-list]') as HTMLDivElement;
-    this.counter = this.overlay.querySelector('[data-counter]') as HTMLDivElement;
+    this.list = this.root.querySelector('[data-list]') as HTMLDivElement;
+    this.counter = this.root.querySelector('[data-counter]') as HTMLDivElement;
+
+    (this.root.querySelector('[data-close]') as HTMLButtonElement).addEventListener(
+      'click',
+      callbacks.onClose
+    );
   }
 
   render(discoveredClues: string[]): void {
@@ -44,12 +56,12 @@ export class NotebookModal {
 
   show(): void {
     this.open = true;
-    this.overlay.classList.remove('hidden');
+    this.root.classList.remove('hidden');
   }
 
   hide(): void {
     this.open = false;
-    this.overlay.classList.add('hidden');
+    this.root.classList.add('hidden');
   }
 
   toggle(): void {
@@ -65,6 +77,6 @@ export class NotebookModal {
   }
 
   destroy(): void {
-    this.overlay.remove();
+    this.root.remove();
   }
 }

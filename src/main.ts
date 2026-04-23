@@ -9,9 +9,13 @@ if (!app) {
 }
 
 app.innerHTML = `
-  <div class="game-shell">
-    <div id="phaser-game"></div>
-    <div id="ui-layer" class="ui-layer"></div>
+  <div class="app-layout">
+    <div class="game-stage">
+      <div class="game-shell">
+        <div id="phaser-game"></div>
+      </div>
+    </div>
+    <div id="hud-dock" class="hud-dock"></div>
   </div>
 `;
 

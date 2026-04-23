@@ -10,11 +10,11 @@ export const CLUES: ClueDefinition[] = [
   },
   {
     id: 'pharmacy-on-square',
-    text: 'La pharmacie est sur la place des Grands-Hommes.'
+    text: 'La pharmacie est sur la place Doualle.'
   },
   {
     id: 'library-end-foch',
-    text: "La bibliotheque est au bout de l'avenue Foch."
+    text: "La bibliotheque est au bout de l'avenue Blanquart."
   },
   {
     id: 'school-opposite-pharmacy',
@@ -26,11 +26,11 @@ export const CLUES: ClueDefinition[] = [
   },
   {
     id: 'station-on-foch',
-    text: "La gare est dans l'avenue Foch."
+    text: "La gare est dans l'avenue Blanquart."
   },
   {
     id: 'ispa-corner',
-    text: "L'ISPA est au coin du boulevard des Marechaux et de l'avenue Foch."
+    text: "L'ISPA est au coin du boulevard des Marechaux et de l'avenue Blanquart."
   },
   {
     id: 'hospital-francs-muriers',
@@ -38,7 +38,7 @@ export const CLUES: ClueDefinition[] = [
   },
   {
     id: 'market-square',
-    text: 'Le marche est sur la place des Grands-Hommes.'
+    text: 'Le marche est sur la place Doualle.'
   }
 ];
 

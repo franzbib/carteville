@@ -35,7 +35,7 @@ export const ROAD_RECTS: RoadDefinition[] = [
     y: 92,
     width: 116,
     height: 338,
-    label: 'rue Saint-Michel',
+    label: 'rue De La Croix',
     labelX: 908,
     labelY: 222,
     rotation: -90
@@ -46,7 +46,7 @@ export const ROAD_RECTS: RoadDefinition[] = [
     y: 700,
     width: 1120,
     height: 126,
-    label: 'avenue Foch',
+    label: 'avenue Blanquart',
     labelX: 1042,
     labelY: 854
   },

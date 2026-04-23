@@ -22,14 +22,14 @@ export const NPCS: NPCData[] = [
     lines: [
       {
         clueId: 'market-square',
-        text: 'Le marche est bien sur la place des Grands-Hommes.'
+        text: 'Le marche est bien sur la place Doualle.'
       },
       {
         clueId: 'pharmacy-on-square',
-        text: 'La pharmacie donne sur la place des Grands-Hommes.'
+        text: 'La pharmacie donne sur la place Doualle.'
       }
     ],
-    repeatLine: 'Sur la place des Grands-Hommes, le marche et la pharmacie servent de bons reperes.'
+    repeatLine: 'Sur la place Doualle, le marche et la pharmacie servent de bons reperes.'
   },
   {
     id: 'rodolphe',
@@ -70,10 +70,10 @@ export const NPCS: NPCData[] = [
     lines: [
       {
         clueId: 'library-end-foch',
-        text: "La bibliotheque se trouve au bout de l'avenue Foch."
+        text: "La bibliotheque se trouve au bout de l'avenue Blanquart."
       }
     ],
-    repeatLine: "La bibliotheque est tout au bout de l'avenue Foch."
+    repeatLine: "La bibliotheque est tout au bout de l'avenue Blanquart."
   },
   {
     id: 'candice',
@@ -96,13 +96,13 @@ export const NPCS: NPCData[] = [
     lines: [
       {
         clueId: 'station-on-foch',
-        text: "La gare est dans l'avenue Foch."
+        text: "La gare est dans l'avenue Blanquart."
       },
       {
         clueId: 'ispa-corner',
-        text: "L'ISPA est au coin du boulevard des Marechaux et de l'avenue Foch."
+        text: "L'ISPA est au coin du boulevard des Marechaux et de l'avenue Blanquart."
       }
     ],
-    repeatLine: "Au croisement du boulevard et de l'avenue Foch, on ne peut pas rater L'ISPA."
+    repeatLine: "Au croisement du boulevard et de l'avenue Blanquart, on ne peut pas rater L'ISPA."
   }
 ];

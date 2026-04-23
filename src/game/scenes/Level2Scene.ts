@@ -337,15 +337,16 @@ export class Level2Scene extends Phaser.Scene {
         <p class="panel-kicker">Niveau 2</p>
         <h2 class="panel-heading">Nouvelle carte de travail</h2>
         <p class="panel-text">
-          Cette scene affiche une carte elegante generee automatiquement. Vous pourrez y brancher le prochain exercice quand vous serez pret.
+          Cette scene affiche une carte elegante generee automatiquement. Vous pourrez y brancher le prochain exercice quand vous serez pret, ou passer des maintenant a la grande carte du niveau 3.
         </p>
         <div class="status-pill">Graine : ${this.saveData.level2Seed}</div>
         <div class="level2-button-row">
           <button type="button" class="level2-button" data-action="regen">Nouvelle carte</button>
+          <button type="button" class="level2-button" data-action="level3">Passer niveau 3</button>
           <button type="button" class="level2-button" data-action="level1">Retour niveau 1</button>
           <button type="button" class="level2-button" data-action="menu">Menu</button>
         </div>
-        <p class="panel-close">Clavier : <strong>N</strong> nouvelle carte, <strong>1</strong> retour niveau 1, <strong>Echap</strong> menu.</p>
+        <p class="panel-close">Clavier : <strong>N</strong> nouvelle carte, <strong>3</strong> passer au niveau 3, <strong>1</strong> retour niveau 1, <strong>Echap</strong> menu.</p>
       </section>
       <section class="dock-panel">
         <p class="panel-kicker">Base future</p>
@@ -353,6 +354,7 @@ export class Level2Scene extends Phaser.Scene {
           <li>quartier genere de maniere reproducible a partir d une graine</li>
           <li>voirie, ilots, parcs et place centrale deja en place</li>
           <li>pret a accueillir des zones interactives, PNJ et nouvelles consignes</li>
+          <li>passerelle active vers le niveau 3 et sa grande carte libre</li>
         </ul>
       </section>
     `;
@@ -366,6 +368,9 @@ export class Level2Scene extends Phaser.Scene {
         switch (button.dataset.action) {
           case 'regen':
             this.regenerateMap();
+            return;
+          case 'level3':
+            this.advanceToLevel3();
             return;
           case 'level1':
             this.returnToLevel1();
@@ -391,6 +396,10 @@ export class Level2Scene extends Phaser.Scene {
       case 'KeyN':
         this.regenerateMap();
         return;
+      case 'Digit3':
+      case 'Numpad3':
+        this.advanceToLevel3();
+        return;
       case 'Digit1':
       case 'Numpad1':
       case 'Backspace':
@@ -414,5 +423,11 @@ export class Level2Scene extends Phaser.Scene {
     this.saveData.currentLevel = 1;
     saveGame(this.saveData);
     this.scene.start('CityScene');
+  }
+
+  private advanceToLevel3(): void {
+    this.saveData.currentLevel = 3;
+    saveGame(this.saveData);
+    this.scene.start('Level3Scene');
   }
 }

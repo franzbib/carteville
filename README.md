@@ -2,13 +2,11 @@
 
 Jeu pedagogique de reperage en ville pour apprenants de FLE, realise avec Phaser 3, TypeScript et Vite.
 
-La version actuelle est centree sur la phase 1 :
+La version actuelle propose trois etapes :
 
-1. explorer la carte ;
-2. parler aux habitants ;
-3. collecter des indices ;
-4. proposer une etiquette pour chaque batiment ;
-5. voir immediatement l etiquette posee sur le batiment concerne.
+1. niveau 1 : explorer la carte, parler aux habitants, collecter des indices et identifier les batiments ;
+2. niveau 2 : ouvrir une nouvelle carte generee automatiquement ;
+3. niveau 3 : parcourir une grande carte basee sur `ville3.png`, avec camera suivie et zone de marche sur l ensemble du plan.
 
 ## Lancer le projet
 
@@ -37,6 +35,7 @@ Le jeu propose maintenant une solution tactile :
 
 - joystick virtuel pour se deplacer ;
 - boutons `Action`, `Etiqueter`, `Carnet` et `Fermer` ;
+- joystick virtuel egalement sur le niveau 3 ;
 - choix d etiquettes cliquables directement au doigt ;
 - aide et panneaux places hors de la carte, pour ne pas masquer le plan.
 
@@ -86,6 +85,8 @@ public/
 - collisions Arcade Physics sur batiments, PNJ et parking
 - interface en DOM superposee au canvas pour des panneaux lisibles
 - camera suivie dans le canvas, sans scroll de page
+- niveau 3 base sur une grande image locale servie par Vite
+- deplacement du niveau 3 contraint a un reseau declaratif de zones marchables
 - audio leger genere en Web Audio, sans assets externes fragiles
 
 ## Contenu implemente
@@ -97,6 +98,8 @@ public/
 - affichage direct des etiquettes sur les batiments
 - validation `facile` et `normal`
 - fin de partie locale quand le plan est entierement reconstitue
+- niveau 2 avec carte proceduralement generee
+- niveau 3 avec la carte complete `public/assets/levels/ville3.png`
 
 ## Remarques
 

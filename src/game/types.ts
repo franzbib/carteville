@@ -1,7 +1,7 @@
 export type GameMode = 'easy' | 'normal' | 'review';
 
 export type Phase = 'identify' | 'complete';
-export type LevelId = 1 | 2;
+export type LevelId = 1 | 2 | 3;
 
 export type BuildingName =
   | 'hopital'

@@ -4,6 +4,7 @@ import { MAP_HEIGHT, MAP_WIDTH } from './data/mapLayout';
 import { BootScene } from './scenes/BootScene';
 import { CityScene } from './scenes/CityScene';
 import { Level2Scene } from './scenes/Level2Scene';
+import { Level3Scene } from './scenes/Level3Scene';
 import { MenuScene } from './scenes/MenuScene';
 
 export class FrenchCityGame {
@@ -31,7 +32,7 @@ export class FrenchCityGame {
         antialias: true,
         pixelArt: false
       },
-      scene: [BootScene, MenuScene, CityScene, Level2Scene]
+      scene: [BootScene, MenuScene, CityScene, Level2Scene, Level3Scene]
     });
   }
 }

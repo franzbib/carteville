@@ -188,6 +188,10 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private describeSave(save: SaveData): string {
+    if (save.currentLevel === 3) {
+      return 'niveau 3 ouvert, grande carte libre disponible.';
+    }
+
     if (save.currentLevel === 2) {
       return 'niveau 2 ouvert, nouvelle carte disponible.';
     }
@@ -242,6 +246,11 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private launchFromSave(_save: SaveData): void {
+    if (_save.currentLevel === 3) {
+      this.scene.start('Level3Scene');
+      return;
+    }
+
     if (_save.currentLevel === 2) {
       this.scene.start('Level2Scene');
       return;

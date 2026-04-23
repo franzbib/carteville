@@ -81,6 +81,10 @@ function derivePhase(
 }
 
 function deriveCurrentLevel(rawLevel: unknown): LevelId {
+  if (rawLevel === 3) {
+    return 3;
+  }
+
   return rawLevel === 2 ? 2 : 1;
 }
 
@@ -209,7 +213,7 @@ export function resetSave(): void {
 }
 
 export function hasMeaningfulProgress(data: SaveData): boolean {
-  if (data.currentLevel === 2) {
+  if (data.currentLevel !== 1) {
     return true;
   }
 
